@@ -2,7 +2,7 @@ import json
 from wsgiref.simple_server import make_server
 
 tasks = []
-next_id = 1 #Contador para ID unicos de c/tasks
+next_id = 1 #Contador para ID unicos de c/tarea
 
 def function(environ, start_response):
     
@@ -38,6 +38,83 @@ def function(environ, start_response):
         start_response(status, headers)
         body = json.dumps(new_tasks).encode("utf-8")
         return [body] #Convierte la lista a JSON
+
+#Ver una tarea especifica con su ID
+    if verbo == "GET" and ruta.startswith("/tasks/"):
+        id_texto = ruta.replace("/tasks/" , "")
+        id_tarea = int (id_texto)
+
+        tarea_encontrada = None
+        for t in tasks:
+            if t["id"] == id_tarea:
+                tarea_encontrada = t
+
+        if tarea_encontrada is None:
+            status = "404 Not Found"
+            headers = [("Content-Type" , "application/json")]
+            start_response(status , headers)
+            body = json.dumps({"error": "404 Not Found"}).encode("utf-8")
+            return [body]
+
+        status = "200 Ok"
+        headers = [("Content-Type" , "application/json")]
+        start_response(status , headers)
+        body = json.dumps(tarea_encontrada).encode("utf-8")
+        return [body]
+
+    if verbo == "PATCH" and ruta.startswith("/tasks/"):
+        id_texto = ruta.replace("/tasks/" , "")
+        id_tarea = int(id_texto)
+
+        tarea_encontrada = None 
+
+        for t in tasks:
+            if t["id"] == id_tarea:
+                tarea_encontrada = t
+        
+        if tarea_encontrada is None:
+            status = "404 Not Found"
+            headers = [("Content-Type" , "application/json")]
+            start_response(status , headers)
+            body = json.dumps({"error": "404 Not Found"}).encode("utf-8")
+            return [body]
+
+        size = int(environ.get("CONTENT_LENGTH" , 0) or 0)
+        unprocessed_body = environ["wsgi.input"].read(size)
+        cambios = json.loads(unprocessed_body)
+
+        for clave in cambios:
+            tarea_encontrada[clave] = cambios[clave]
+
+        status = "200 Ok"
+        headers = [("Content-Type" , "application/json")]
+        start_response(status , headers)
+        body = json.dumps(tarea_encontrada).encode("utf-8")
+        return [body]
+
+    if verbo == "DELETE" and ruta.startswith("/tasks/"):
+        id_texto = ruta.replace("/tasks/" , "")
+        id_tarea = int(id_texto)
+
+        tarea_encontrada = None 
+        for t in tasks:
+            if t["id"] == id_tarea:
+                tarea_encontrada = t
+
+        if tarea_encontrada is None:
+            status = "404 Not Found" 
+            headers = [("Content-Type" , "application/json")]
+            start_response(status , headers)
+            body = json.dumps({"error": "404 Not Found"}).encode("utf-8")
+            return [body]
+        
+        tasks.remove(tarea_encontrada)
+
+        status = "200 Ok"
+        headers = [("Content-Type" , "application/json")]
+        start_response(status , headers)
+        body = json.dumps({"message": "Task deleted successfully"}).encode("utf-8")
+        return [body]
 
     #Si no coincide retorna 404 en JSON
     status = "404 Not Found"
