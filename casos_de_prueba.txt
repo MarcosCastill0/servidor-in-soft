@@ -1,0 +1,56 @@
+=== 1. GET /tasks (vacio) ===
+HTTP/1.0 200 Ok
+Date: Thu, 27 Aug 2026 18:25:33 GMT
+Server: WSGIServer/0.2 CPython/3.9.6
+content-Type: application/json
+Content-Length: 2
+
+[]
+=== 2. POST /tasks (crear tarea) ===
+HTTP/1.0 201 Created
+Date: Thu, 27 Aug 2026 18:25:41 GMT
+Server: WSGIServer/0.2 CPython/3.9.6
+content-Type: application/json
+Content-Length: 68
+
+{"id": 1, "title": "Estudiar HTTP", "description": "repasar verbos"}
+=== 3. GET /tasks/1 ===
+HTTP/1.0 200 Ok
+Date: Thu, 27 Aug 2026 18:25:47 GMT
+Server: WSGIServer/0.2 CPython/3.9.6
+Content-Type: application/json
+Content-Length: 68
+
+{"id": 1, "title": "Estudiar HTTP", "description": "repasar verbos"}
+=== 4. PATCH /tasks/1 (modificar solo un campo) ===
+HTTP/1.0 200 Ok
+Date: Thu, 27 Aug 2026 18:25:52 GMT
+Server: WSGIServer/0.2 CPython/3.9.6
+Content-Type: application/json
+Content-Length: 82
+
+{"id": 1, "title": "Estudiar HTTP", "description": "repasar verbos", "done": true}
+=== 5. GET /tasks/999 (no existe, debe dar 404) ===
+HTTP/1.0 404 Not Found
+Date: Thu, 27 Aug 2026 18:25:59 GMT
+Server: WSGIServer/0.2 CPython/3.9.6
+Content-Type: application/json
+Content-Length: 26
+
+{"error": "404 Not Found"}
+=== 6. DELETE /tasks/1 ===
+HTTP/1.0 200 Ok
+Date: Thu, 27 Aug 2026 18:26:05 GMT
+Server: WSGIServer/0.2 CPython/3.9.6
+Content-Type: application/json
+Content-Length: 40
+
+{"message": "Task deleted successfully"}
+=== 7. GET /tasks/1 despues del DELETE (debe dar 404) ===
+HTTP/1.0 404 Not Found
+Date: Thu, 27 Aug 2026 18:26:11 GMT
+Server: WSGIServer/0.2 CPython/3.9.6
+Content-Type: application/json
+Content-Length: 26
+
+{"error": "404 Not Found"}
